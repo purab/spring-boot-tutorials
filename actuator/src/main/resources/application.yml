@@ -1,0 +1,9 @@
+server:
+  port: 8084
+
+spring:
+  profiles:
+    active: prod
+name: prod-YAML
+environment: production
+enabled: true

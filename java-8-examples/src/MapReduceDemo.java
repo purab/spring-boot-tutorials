@@ -40,6 +40,15 @@ public class MapReduceDemo {
         Optional<String> longestString = words.stream().reduce((word1, word2) -> word1.length() > word2.length() ? word1 : word2);
         System.out.println(longestString.get());
 
+        //get employee whose grade A
+        //get salary
+        double averageSalary = EmployeeDatabase.getEmployees().stream()
+                .filter(employee -> employee.getGrade().equalsIgnoreCase("A"))
+                .map(employee -> employee.getSalary())
+                .mapToDouble(i -> i)
+                .average().getAsDouble();
+        System.out.println("average sal:"+ averageSalary);
+
 
     }
 }

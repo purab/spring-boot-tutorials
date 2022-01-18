@@ -26,7 +26,7 @@ public class UserService {
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Async
-    public CompletableFuture<List<User>> saveUser(MultipartFile file) throws Exception {
+    public CompletableFuture<List<User>> saveUsers(MultipartFile file) throws Exception {
         long start = System.currentTimeMillis();
         List<User> users = parseCSVFile(file);
         logger.info("saving list of users of size {}", users.size(), "" + Thread.currentThread().getName());

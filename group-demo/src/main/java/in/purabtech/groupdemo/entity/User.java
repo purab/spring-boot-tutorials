@@ -24,5 +24,5 @@ public class User {
     private String username;
     private String password;
     private boolean active;
-    private String roles;
+    private String roles; //ROLE_USER, ROLE_ADMIN
 }

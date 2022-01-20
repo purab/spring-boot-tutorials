@@ -1,8 +1,11 @@
 package in.purabtech.groupdemo.controller;
 
+import in.purabtech.groupdemo.common.UserConstants;
 import in.purabtech.groupdemo.entity.User;
 import in.purabtech.groupdemo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    public static final String DEFAULT_ROLE="ROLE_USER";
-    public static final String[] ADMIN_ACCESS={"ROLE_ADMIN","ROLE_MODERATOR"};
-    public static final String[] MODERATOR_ACCESS={"ROLE_MODERATOR"};
-
     @Autowired
     private UserRepository userRepository;
 
@@ -30,7 +29,7 @@ public class UserController {
 
     @PostMapping("/join")
     public String joinGroup(@RequestBody User user) {
-        user.setRoles(DEFAULT_ROLE);
+        user.setRoles(UserConstants.DEFAULT_ROLE);
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
         userRepository.save(user);
@@ -40,6 +39,8 @@ public class UserController {
     //if loggedin user is ADMIN -> ADMIN or MODERATOR
     //
     @GetMapping("/access/{userId}/{userRole}")
+    //@Secured("ROLE_ADMIN")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_MODERATOR')")
     public String giveAccessToUser(@PathVariable int userId,@PathVariable String userRole, Principal principal) {
         User user = userRepository.findById(userId).get();
         List<String> activeRoles = getRolesByLoggedInUser(principal);
@@ -56,10 +57,10 @@ public class UserController {
         String roles = getLoggedInUser(principal).getRoles();
         List<String> assignRoles= Arrays.stream(roles.split(",")).collect(Collectors.toList());
         if(assignRoles.contains("ROLE_ADMIN")) {
-            return Arrays.stream(ADMIN_ACCESS).collect(Collectors.toList());
+            return Arrays.stream(UserConstants.ADMIN_ACCESS).collect(Collectors.toList());
         }
         if(assignRoles.contains("ROLE_MODERATOR")) {
-            return Arrays.stream(MODERATOR_ACCESS).collect(Collectors.toList());
+            return Arrays.stream(UserConstants.MODERATOR_ACCESS).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
@@ -67,4 +68,17 @@ public class UserController {
     private User getLoggedInUser(Principal principal){
         return userRepository.findByUserName(principal.getName()).get();
     }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public List<User> loadUsers() {
+        return userRepository.findAll();
+    }
+
+    @GetMapping("/test")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public String testUserAcess(){
+        return "user can only access this!";
+    }
+
 }

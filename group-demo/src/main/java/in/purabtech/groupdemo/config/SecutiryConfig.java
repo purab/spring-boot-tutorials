@@ -25,6 +25,13 @@ public class SecutiryConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService);
     }
 
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable();
+        http.authorizeRequests().antMatchers("/user/join").permitAll()
+                .and().authorizeRequests().antMatchers("/user/**").authenticated().and().httpBasic();
+    }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

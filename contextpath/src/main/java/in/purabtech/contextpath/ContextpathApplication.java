@@ -1,0 +1,13 @@
+package in.purabtech.contextpath;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ContextpathApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ContextpathApplication.class, args);
+    }
+
+}
